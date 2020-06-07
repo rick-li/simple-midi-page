@@ -1,0 +1,28 @@
+{
+  "name": "timidity-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "build-js": "NODE_ENV=production browserify --no-detect-globals --plugin tinyify ./index.js > ./bundle.js",
+    "wstart": "webpack-dev-server --open --mode development",
+    "build": "webpack --mode production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "brfs": "^2.0.2",
+    "express": "^4.16.3",
+    "freepats": "^1.0.2",
+    "timidity": "^1.2.1",
+    "unmute-ios-audio": "^3.0.0"
+  },
+  "browserslist": "> 0.25%, not dead",
+  "devDependencies": {
+    "browserify": "^16.2.2",
+    "tinyify": "^2.5.1",
+    "watchify": "^3.11.1"
+  }
+}

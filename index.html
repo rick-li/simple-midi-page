@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Timidity 測試</title>
+    <link rel="stylesheet" type="text/css" href="reset.css">
+    <script src="https://timidity-shanghai.oss-accelerate.aliyuncs.com/bundle.js"></script>
+
+    <style>
+        html,body{
+            height: 100%;
+        }
+        body{
+            color: black;
+        }
+        .container {
+            height: 100%;
+            background-color: gray;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            
+            
+        }
+        .state-stop {
+            background-image: url(/start.svg);
+        }
+        .state-start {
+            background-image: url(/stop.svg);
+        }
+        #music_btn{
+            background-repeat: no-repeat;
+            background-size: 80px 80px;
+            height: 80px;
+            width: 80px;
+            cursor: pointer;
+        }
+        #music_name{
+            font-size: 32px;
+            height: 80px;
+        }
+    </style>
+    <script>
+        //緩存控制
+        if ('serviceWorker' in navigator) {
+            console.log('CLIENT: service worker registration in progress.');
+            navigator.serviceWorker.register('/cache.service.worker.js').then(function() {
+                console.log('CLIENT: service worker registration complete.');
+            }, function() {
+                console.log('CLIENT: service worker registration failure.');
+            });
+        } else {
+            console.log('CLIENT: service worker is not supported.');
+        }
+
+        // var player = new Timidity('https://timidity.oss-cn-hongkong.aliyuncs.com/');
+        //從阿里雲oss加載midi庫
+        var player = new Timidity('https://timidity-shanghai.oss-accelerate.aliyuncs.com/');
+        
+        window.onload = function(){
+            UnmuteIosAudio();
+            var startTime = 0;
+            var oneHour = 60 * 60 * 1000;
+            document.querySelector("#music_btn").
+            addEventListener('click',function(e){
+                
+                if(e.target.className == 'state-stop') {
+                    e.target.className = 'state-start';
+                    console.log('started.');
+                    startTime = new Date().getTime();
+                    // player.load(location.href + '/../bach.mid?='+new Date().getTime())
+                    //因為timidity默認指向了公共服務，此處要用絕對路徑加載midi文件
+                    player.load(location.href + 'bach.mid');
+                    player.play();
+                }else {
+                    startTime = 0;
+                    e.target.className = 'state-stop';
+                    console.log('stop.');
+                    player.pause()
+                }
+                
+            });
+            player.on('ended', function() {
+                //如果不足一小時則繼續播放。
+                if((new Date().getTime() - startTime) < oneHour){
+                    console.log('less than 1 hour, continue');
+                    player.play();
+                }else {
+                    console.log('ended');
+                }
+
+            });
+            // player.on('unstarted', () => console.log('unstarted'))
+            // player.on('playing', () => console.log('playing'))
+            // player.on('paused', () => console.log('paused'))
+            
+                // player.on('buffering', () => console.log('buffering'))
+                // player.on('timeupdate', (time) => console.log('timeupdate', time))
+            player.on('error', function(err){
+                console.log('error', err);
+            });
+        }
+
+
+    
+
+        
+    </script>
+</head>
+<body >
+    <div class="container">
+        
+        <div id="music_name" >Bach bwv988.mid</div>
+        <div id="music_btn" class="state-stop"></div>
+    </div>
+    
+</body>
+<script>
+    // document.write('document.write("<EMBED  width=2 height=1 loop=true AUTOSTART=TRUE autoplay=true SRC="../tcmm070000603.mid" type="audio/rtp-midi"  style="height: 1px;width:1px;"/>')
+    // document.write('<EMBED  width=2 height=1 loop=true AUTOSTART=TRUE autoplay=true SRC="bach.mid" type="audio/rtp-midi"  style="height: 1px;width:1px;"/>')
+    document.write("<EMBED SRC=\"../tcmm070000603.mid\" width=2 height=1 loop=true AUTOSTART=TRUE autoplay=true type=\"audio/rtp-midi\"  style=\"height: 1px;width:1px;\">");
+
+</script>
+</html>
